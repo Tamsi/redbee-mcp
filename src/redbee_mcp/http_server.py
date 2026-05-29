@@ -6,6 +6,7 @@ Enables exposing MCP functionality via HTTP instead of stdio
 import asyncio
 import json
 import logging
+import os
 import time
 import uuid
 from typing import Any, Dict, List, Optional, AsyncGenerator
@@ -40,7 +41,7 @@ class McpHttpServer:
     Compatible with JSON-RPC 2.0 protocol
     """
     
-    def __init__(self, config: Optional[RedBeeConfig] = None, host: str = "0.0.0.0", port: int = 8000):
+    def __init__(self, config: Optional[RedBeeConfig] = None, host: str = "127.0.0.1", port: int = 8000):
         self.config = config
         self.host = host
         self.port = port
@@ -48,17 +49,19 @@ class McpHttpServer:
         self.app = FastAPI(
             title="Red Bee MCP Server",
             description="MCP Server for Red Bee Media OTT Platform via HTTP/SSE",
-            version="1.0.0"
+            version="1.4.2"
         )
-        
-        # Configure CORS to allow requests from browser
-        self.app.add_middleware(
-            CORSMiddleware,
-            allow_origins=["*"],  # In production, specify allowed domains
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+
+        cors_origins = os.getenv("REDBEE_CORS_ORIGINS", "").strip()
+        allow_origins = [o.strip() for o in cors_origins.split(",") if o.strip()] if cors_origins else []
+        if allow_origins:
+            self.app.add_middleware(
+                CORSMiddleware,
+                allow_origins=allow_origins,
+                allow_credentials=True,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
         
         self._setup_routes()
     
@@ -70,7 +73,7 @@ class McpHttpServer:
             """Root endpoint with API information"""
             return {
                 "name": "Red Bee MCP Server",
-                "version": "1.0.0",
+                "version": "1.4.2",
                 "description": "MCP Server for Red Bee Media OTT Platform",
                 "endpoints": {
                     "jsonrpc": "POST /",
@@ -241,7 +244,7 @@ class McpHttpServer:
         server = uvicorn.Server(config)
         await server.serve()
 
-async def start_http_server(config: Optional[RedBeeConfig] = None, host: str = "0.0.0.0", port: int = 8000):
+async def start_http_server(config: Optional[RedBeeConfig] = None, host: str = "127.0.0.1", port: int = 8000):
     """
     Helper function to start the HTTP server
     """

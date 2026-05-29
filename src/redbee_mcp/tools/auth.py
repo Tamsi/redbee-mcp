@@ -206,13 +206,8 @@ AUTH_TOOLS = [
         description="Creates an anonymous session to access public content",
         inputSchema={
             "type": "object",
-            "properties": {
-                "random_string": {
-                    "type": "string",
-                    "description": "Dummy parameter for no-parameter tools"
-                }
-            },
-            "required": ["random_string"]
+            "properties": {},
+            "required": []
         }
     ),
     Tool(

@@ -3,9 +3,12 @@ Data models for Red Bee Media OTT Platform API
 Based on official documentation: https://redbee.live/docs/
 """
 
+import os
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Union
 from pydantic import BaseModel, Field
+
+DEFAULT_EXPOSURE_BASE_URL = "https://exposure.api.redbee.live"
 
 
 class RedBeeConfig(BaseModel):
@@ -19,6 +22,33 @@ class RedBeeConfig(BaseModel):
     username: Optional[str] = Field(default=None, description="Username for authentication")
     password: Optional[str] = Field(default=None, description="Password for authentication")
     timeout: int = Field(default=30, description="Request timeout in seconds")
+
+    @classmethod
+    def from_env(cls) -> "RedBeeConfig":
+        """Build configuration from environment variables."""
+        return cls(
+            customer=os.getenv("REDBEE_CUSTOMER", ""),
+            business_unit=os.getenv("REDBEE_BUSINESS_UNIT", ""),
+            exposure_base_url=os.getenv("REDBEE_EXPOSURE_BASE_URL", DEFAULT_EXPOSURE_BASE_URL),
+            config_id=os.getenv("REDBEE_CONFIG_ID", "sandwich"),
+            username=os.getenv("REDBEE_USERNAME"),
+            password=os.getenv("REDBEE_PASSWORD"),
+            session_token=os.getenv("REDBEE_SESSION_TOKEN"),
+            device_id=os.getenv("REDBEE_DEVICE_ID"),
+            timeout=int(os.getenv("REDBEE_TIMEOUT", "30")),
+        )
+
+    def validate_required(self) -> None:
+        """Raise ValueError if mandatory fields are missing."""
+        missing = []
+        if not self.customer:
+            missing.append("REDBEE_CUSTOMER")
+        if not self.business_unit:
+            missing.append("REDBEE_BUSINESS_UNIT")
+        if missing:
+            raise ValueError(
+                f"Missing required configuration: {', '.join(missing)}"
+            )
 
 
 class AuthenticationResponse(BaseModel):

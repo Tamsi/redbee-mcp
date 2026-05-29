@@ -255,9 +255,13 @@ SYSTEM_TOOLS = [
                 "device_id": {
                     "type": "string",
                     "description": "Device ID to delete"
+                },
+                "sessionToken": {
+                    "type": "string",
+                    "description": "User session token"
                 }
             },
-            "required": ["device_id"]
+            "required": ["device_id", "sessionToken"]
         }
     )
 ]

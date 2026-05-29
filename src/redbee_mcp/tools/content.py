@@ -23,7 +23,7 @@ async def get_public_asset_details(
     try:
         import aiohttp
         
-        url = f"https://exposure.api.redbee.live/v1/customer/{config.customer}/businessunit/{config.business_unit}/content/asset/{assetId}"
+        url = f"{config.exposure_base_url.rstrip('/')}/v1/customer/{config.customer}/businessunit/{config.business_unit}/content/asset/{assetId}"
         params = {
             "onlyPublished": str(onlyPublished).lower(),
             "fieldSet": fieldSet
@@ -82,7 +82,7 @@ async def search_content_v2(
     try:
         import aiohttp
         
-        url = f"https://exposure.api.redbee.live/v2/customer/{config.customer}/businessunit/{config.business_unit}/content/search/query/{query}"
+        url = f"{config.exposure_base_url.rstrip('/')}/v2/customer/{config.customer}/businessunit/{config.business_unit}/content/search/query/{query}"
         
         params = {
             "pageSize": pageSize,
@@ -241,7 +241,7 @@ async def search_assets_autocomplete(
         import aiohttp
         
         # Utiliser l'endpoint v3 public selon la documentation avec les variables d'environnement
-        url = f"https://exposure.api.redbee.live/v3/customer/{config.customer}/businessunit/{config.business_unit}/content/search/asset/title/autocomplete/{query}"
+        url = f"{config.exposure_base_url.rstrip('/')}/v3/customer/{config.customer}/businessunit/{config.business_unit}/content/search/asset/title/autocomplete/{query}"
         
         params = {
             "fieldSet": fieldSet
@@ -371,7 +371,7 @@ async def get_assets_by_tag(
         import aiohttp
         
         # Use public v1 endpoint according to documentation
-        url = f"https://exposure.api.redbee.live/v1/customer/{config.customer}/businessunit/{config.business_unit}/tag/asset"
+        url = f"{config.exposure_base_url.rstrip('/')}/v1/customer/{config.customer}/businessunit/{config.business_unit}/tag/asset"
         
         params = {
             "tagType": tagType,
@@ -440,7 +440,7 @@ async def list_assets(
         import aiohttp
         
         # Use main v1 endpoint according to documentation
-        url = f"https://exposure.api.redbee.live/v1/customer/{config.customer}/businessunit/{config.business_unit}/content/asset"
+        url = f"{config.exposure_base_url.rstrip('/')}/v1/customer/{config.customer}/businessunit/{config.business_unit}/content/asset"
         
         params = {
             "pageSize": pageSize,
@@ -547,7 +547,7 @@ async def search_multi_v3(
         import aiohttp
         
         # Use v3 multi search endpoint
-        url = f"https://exposure.api.redbee.live/v3/customer/{config.customer}/businessunit/{config.business_unit}/content/search/query/{query}"
+        url = f"{config.exposure_base_url.rstrip('/')}/v3/customer/{config.customer}/businessunit/{config.business_unit}/content/search/query/{query}"
         
         params = {
             "types": types,
@@ -649,7 +649,7 @@ async def get_asset_thumbnail(
         import aiohttp
         
         # Use v1 thumbnail endpoint (returns 307 redirect)
-        url = f"https://exposure.api.redbee.live/v1/customer/{config.customer}/businessunit/{config.business_unit}/content/asset/{assetId}/thumbnail"
+        url = f"{config.exposure_base_url.rstrip('/')}/v1/customer/{config.customer}/businessunit/{config.business_unit}/content/asset/{assetId}/thumbnail"
         
         params = {}
         if time:

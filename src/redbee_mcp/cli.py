@@ -18,14 +18,10 @@ import sys
 from typing import Optional
 import multiprocessing as mp
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('/tmp/redbee-mcp.log'),
-    ]
-)
+from .logging_config import configure_logging
+from .models import DEFAULT_EXPOSURE_BASE_URL, RedBeeConfig
+
+configure_logging()
 logger = logging.getLogger(__name__)
 
 class RedBeeMCPCLI:
@@ -70,8 +66,8 @@ Usage examples:
         # HTTP configuration
         parser.add_argument(
             "--host", 
-            default="0.0.0.0",
-            help="Host for HTTP server (default: 0.0.0.0)"
+            default=os.getenv("REDBEE_HTTP_HOST", "127.0.0.1"),
+            help="Host for HTTP server (default: 127.0.0.1)"
         )
         parser.add_argument(
             "--port", 
@@ -95,7 +91,7 @@ Usage examples:
         # Red Bee configuration (optional)
         parser.add_argument(
             "--exposure-base-url", 
-            default=os.getenv("REDBEE_EXPOSURE_BASE_URL", "https://exposure.api.redbee.live"),
+            default=os.getenv("REDBEE_EXPOSURE_BASE_URL", DEFAULT_EXPOSURE_BASE_URL),
             help="Red Bee Exposure API base URL"
         )
         parser.add_argument(
@@ -121,19 +117,19 @@ Usage examples:
         
         return parser.parse_args()
 
-    def create_config(self, args: argparse.Namespace):
+    def create_config(self, args: argparse.Namespace) -> RedBeeConfig:
         """Creates RedBeeConfig from parsed arguments."""
-        from .models import RedBeeConfig
-        
-        return RedBeeConfig(
-            customer=args.customer or "",
-            business_unit=args.business_unit or "",
+        config = RedBeeConfig(
+            customer=(args.customer or "").strip(),
+            business_unit=(args.business_unit or "").strip(),
             exposure_base_url=args.exposure_base_url,
             username=args.username,
             session_token=args.session_token,
             device_id=args.device_id,
-            config_id=args.config_id
+            config_id=args.config_id,
         )
+        config.validate_required()
+        return config
 
     def setup_environment(self, config):
         """Configure environment variables for subprocesses."""

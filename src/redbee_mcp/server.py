@@ -13,15 +13,9 @@ from mcp.server.models import InitializationOptions
 from mcp.types import Tool, TextContent, ServerCapabilities
 
 from .handler import McpHandler
+from .logging_config import configure_logging
 
-# Configure logging for MCP (no console output)
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('/tmp/redbee-mcp.log'),
-    ]
-)
+configure_logging()
 logger = logging.getLogger(__name__)
 
 # Global handler instance
@@ -62,7 +56,7 @@ async def main():
             write_stream,
             InitializationOptions(
                 server_name="redbee-mcp",
-                server_version="1.0.0",
+                server_version="1.4.2",
                 capabilities=ServerCapabilities(
                     tools={}
                 )
